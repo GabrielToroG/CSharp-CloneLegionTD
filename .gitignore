@@ -1,0 +1,10 @@
+.godot/
+.mono/
+.import/
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.tmp
+*.log

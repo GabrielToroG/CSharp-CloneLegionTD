@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://b0kinguid001"]
+
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/UnitAdapter.cs" id="1_unit"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gold"]
+albedo_color = Color(1, 0.84, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gold"]
+material = SubResource("StandardMaterial3D_gold")
+size = Vector3(4, 4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box"]
+size = Vector3(4, 4, 4)
+
+[node name="King" type="CharacterBody3D" groups=["Units"]]
+script = ExtResource("1_unit")
+MaxHealth = 1000.0
+AttackDamage = 50.0
+AttackRange = 4.0
+MovementSpeed = 0.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("BoxMesh_gold")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("BoxShape3D_box")
+

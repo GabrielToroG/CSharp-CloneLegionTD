@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://cjqybfrt71mxk"]
+
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/UnitAdapter.cs" id="1_unit"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cyan"]
+albedo_color = Color(0.1, 0.5, 0.8, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cyan"]
+material = SubResource("StandardMaterial3D_cyan")
+size = Vector3(1.8, 2, 1.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box"]
+size = Vector3(1.8, 2, 1.8)
+
+[node name="AlliedDefender" type="CharacterBody3D" groups=["Units"]]
+script = ExtResource("1_unit")
+MaxHealth = 80.0
+AttackDamage = 30.0
+AttackRange = 1.8
+MovementSpeed = 2.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_cyan")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_box")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+

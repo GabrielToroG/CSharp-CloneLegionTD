@@ -1,0 +1,139 @@
+[gd_scene load_steps=6 format=3 uid="uid://testgamemapuid01"]
+
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/MatchAdapter.cs" id="1_gm"]
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/WaveAdapter.cs" id="2_wm"]
+[ext_resource type="Resource" uid="uid://wave1uid001" path="res://Scenes/Wave1.tres" id="3_w1"]
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/GridAdapter.cs" id="4_grid"]
+[ext_resource type="Script" path="res://src/Platform/Godot/Input/ConstructionInput.cs" id="5_builder"]
+[ext_resource type="PackedScene" uid="uid://towerbase001" path="res://Scenes/TowerBase.tscn" id="6_tower"]
+[ext_resource type="PackedScene" uid="uid://allieddefender001" path="res://Scenes/AlliedDefender.tscn" id="7_def"]
+[ext_resource type="Resource" path="res://Scenes/Wave2.tres" id="8_w2"]
+[ext_resource type="PackedScene" path="res://Scenes/GameHUD.tscn" id="9_hud"]
+[ext_resource type="Script" path="res://src/Platform/Godot/Input/SelectionInput.cs" id="10_sel"]
+[ext_resource type="PackedScene" uid="uid://b0kinguid001" path="res://Scenes/King.tscn" id="11_king"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gray"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gray"]
+material = SubResource("StandardMaterial3D_gray")
+size = Vector3(14, 0.2, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_green"]
+albedo_color = Color(0.2, 0.5, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_green"]
+material = SubResource("StandardMaterial3D_green")
+size = Vector3(14, 0.2, 40)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_green"]
+size = Vector3(14, 0.2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yellow"]
+albedo_color = Color(0.8, 0.8, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_yellow"]
+material = SubResource("StandardMaterial3D_yellow")
+size = Vector3(14, 0.2, 8)
+
+[node name="TestGameMap" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(0, 40, 14)
+rotation_degrees = Vector3(-63, 0, 0)
+current = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 20, 0)
+shadow_enabled = true
+
+[node name="Lane_Left" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
+
+[node name="GrayZone" type="MeshInstance3D" parent="Lane_Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
+mesh = SubResource("BoxMesh_gray")
+
+[node name="GreenZone" type="MeshInstance3D" parent="Lane_Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = SubResource("BoxMesh_green")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Lane_Left/GreenZone"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lane_Left/GreenZone/StaticBody3D"]
+shape = SubResource("BoxShape3D_green")
+
+[node name="YellowZone" type="MeshInstance3D" parent="Lane_Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+mesh = SubResource("BoxMesh_yellow")
+
+[node name="KingLeft" parent="Lane_Left" instance=ExtResource("11_king")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+
+[node name="SpawnLeft" type="Marker3D" parent="Lane_Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -24)
+
+[node name="TargetLeft" type="Marker3D" parent="Lane_Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 22)
+
+[node name="GridManager" type="Node3D" parent="Lane_Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -2)
+script = ExtResource("4_grid")
+DefenderPrefab = ExtResource("7_def")
+
+[node name="Lane_Right" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+
+[node name="GrayZone" type="MeshInstance3D" parent="Lane_Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
+mesh = SubResource("BoxMesh_gray")
+
+[node name="GreenZone" type="MeshInstance3D" parent="Lane_Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = SubResource("BoxMesh_green")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Lane_Right/GreenZone"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lane_Right/GreenZone/StaticBody3D"]
+shape = SubResource("BoxShape3D_green")
+
+[node name="YellowZone" type="MeshInstance3D" parent="Lane_Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+mesh = SubResource("BoxMesh_yellow")
+
+[node name="KingRight" parent="Lane_Right" instance=ExtResource("11_king")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+
+[node name="SpawnRight" type="Marker3D" parent="Lane_Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -24)
+
+[node name="TargetRight" type="Marker3D" parent="Lane_Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 22)
+
+[node name="GridManager" type="Node3D" parent="Lane_Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -2)
+script = ExtResource("4_grid")
+DefenderPrefab = ExtResource("7_def")
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1_gm")
+
+[node name="WaveManager" type="Node" parent="." node_paths=PackedStringArray("SpawnPoints", "TargetPoints")]
+script = ExtResource("2_wm")
+Waves = [ExtResource("3_w1"), ExtResource("8_w2")]
+SpawnPoints = [NodePath("../Lane_Left/SpawnLeft"), NodePath("../Lane_Right/SpawnRight")]
+TargetPoints = [NodePath("../Lane_Left/TargetLeft"), NodePath("../Lane_Right/TargetRight")]
+
+[node name="BuilderController" type="Node" parent="." node_paths=PackedStringArray("MainCamera", "HUDManager")]
+script = ExtResource("5_builder")
+MainCamera = NodePath("../Camera3D")
+HUDManager = NodePath("../GameHUD")
+
+[node name="GameHUD" parent="." instance=ExtResource("9_hud")]
+
+[node name="SelectionController" type="Node" parent="." node_paths=PackedStringArray("MainCamera", "HUDManager", "BuilderController")]
+script = ExtResource("10_sel")
+MainCamera = NodePath("../Camera3D")
+HUDManager = NodePath("../GameHUD")
+BuilderController = NodePath("../BuilderController")
+

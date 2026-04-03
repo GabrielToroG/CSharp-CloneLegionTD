@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=3 uid="uid://towerbase001"]
+
+[ext_resource type="Script" path="res://src/GameData/Definitions/TowerDefinition.cs" id="1_td"]
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/TowerAdapter.cs" id="2_tb"]
+[ext_resource type="PackedScene" uid="uid://cjqybfrt71mxk" path="res://Scenes/AlliedDefender.tscn" id="3_fig"]
+[ext_resource type="PackedScene" path="res://Scenes/TowerBaseBlueElite.tscn" id="4_upg"]
+
+[sub_resource type="Resource" id="Resource_td"]
+script = ExtResource("1_td")
+TowerName = "Basic Tower"
+Cost = 20
+UpgradeScene = ExtResource("4_upg")
+UpgradeCost = 25
+SellRefundFactor = 0.75
+Hp = 100.0
+AttackDamage = 30.0
+AttackRange = 1.8
+AttackSpeed = 1.0
+Armor = 0.0
+MovementSpeed = 2.0
+AggroRange = 8.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blue"]
+albedo_color = Color(0.1, 0.5, 0.8, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_blue"]
+material = SubResource("StandardMaterial3D_blue")
+size = Vector3(1.8, 2, 1.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_blue"]
+size = Vector3(1.8, 2, 1.8)
+
+[node name="TowerBase" type="Node3D" groups=["Towers"]]
+script = ExtResource("2_tb")
+Data = SubResource("Resource_td")
+FighterPrefab = ExtResource("3_fig")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_blue")
+
+[node name="StaticBody" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody"]
+shape = SubResource("BoxShape3D_blue")
+

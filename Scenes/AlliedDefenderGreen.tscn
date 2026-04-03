@@ -1,0 +1,31 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/UnitAdapter.cs" id="1_unit"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_green"]
+albedo_color = Color(0.2, 0.8, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_green"]
+material = SubResource("StandardMaterial3D_green")
+size = Vector3(1.8, 2, 1.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box"]
+size = Vector3(1.8, 2, 1.8)
+
+[node name="AlliedDefenderGreen" type="CharacterBody3D" groups=["Units"]]
+script = ExtResource("1_unit")
+MaxHealth = 40.0
+AttackDamage = 15.0
+AttackRange = 5.0
+MovementSpeed = 2.0
+UseProjectileAttack = true
+ProjectileSpeed = 22.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_green")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_box")
+

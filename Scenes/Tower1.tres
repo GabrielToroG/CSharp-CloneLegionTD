@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TowerData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Gameplay/TowerData.cs" id="1_td"]
+
+[resource]
+script = ExtResource("1_td")
+TowerName = "Basic Tower"
+Cost = 20
+Hp = 100.0
+AttackDamage = 15.0
+AttackRange = 1.2
+AttackSpeed = 1.0
+Armor = 5.0
+MovementSpeed = 2.0
+AggroRange = 8.0

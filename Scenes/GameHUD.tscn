@@ -1,0 +1,104 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/Platform/Godot/Presentation/GameHUD.cs" id="1_hud"]
+
+[node name="GameHUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+node_paths = PackedStringArray("BuilderController")
+BuilderController = NodePath("../BuilderController")
+
+[node name="GoldLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+text = "Oro: 0"
+
+[node name="BuildTimerLabel" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -320.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 30
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+horizontal_alignment = 2
+text = "Construccion: 30s"
+
+[node name="InspectorPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -120.0
+offset_right = 150.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Margin" type="MarginContainer" parent="InspectorPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="InspectorPanel/Margin"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="InspectorPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+text = "Selected Unit"
+horizontal_alignment = 1
+
+[node name="StatsLabel" type="Label" parent="InspectorPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "HP: --/-- | ATK: --
+RNG: -- | SPD: --
+ARMOR: --"
+text_overrun_behavior = 3
+
+[node name="ActionPanel" type="HBoxContainer" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -100.0
+offset_right = -40.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="BtnAction1" type="Button" parent="ActionPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Action 1"
+
+[node name="BtnAction2" type="Button" parent="ActionPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Action 2"
+
+[node name="BtnAction3" type="Button" parent="ActionPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Action 3"
+
+[node name="BtnAction4" type="Button" parent="ActionPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Action 4"
+

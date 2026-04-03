@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="WaveDefinition" load_steps=3 format=3 uid="uid://wave1uid001"]
+
+[ext_resource type="Script" path="res://src/GameData/Definitions/WaveDefinition.cs" id="1_wdata"]
+[ext_resource type="PackedScene" uid="uid://testenemy001" path="res://Scenes/TestEnemy.tscn" id="2_enemy"]
+
+[resource]
+script = ExtResource("1_wdata")
+Level = 1
+EnemyScene = ExtResource("2_enemy")
+EnemyCount = 1
+SpawnInterval = 1.5

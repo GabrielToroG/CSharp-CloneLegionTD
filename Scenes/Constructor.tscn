@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/ConstructorAdapter.cs" id="1_constructor"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_orange"]
+albedo_color = Color(0.95, 0.55, 0.15, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_orange"]
+material = SubResource("StandardMaterial3D_orange")
+size = Vector3(1.2, 2, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_constructor"]
+size = Vector3(1.2, 2, 1.2)
+
+[node name="Constructor" type="CharacterBody3D"]
+script = ExtResource("1_constructor")
+MoveSpeed = 6.0
+BuildDistance = 0.6
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_orange")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_constructor")

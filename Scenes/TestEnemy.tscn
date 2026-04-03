@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://testenemy001"]
+
+[ext_resource type="Script" path="res://src/Platform/Godot/Simulation/UnitAdapter.cs" id="1_unit"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_red"]
+albedo_color = Color(0.8, 0.2, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_red"]
+material = SubResource("StandardMaterial3D_red")
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_box"]
+size = Vector3(1, 1, 1)
+
+[node name="TestEnemy" type="CharacterBody3D"]
+script = ExtResource("1_unit")
+MaxHealth = 50.0
+AttackDamage = 5.0
+IsEnemy = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_red")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_box")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
