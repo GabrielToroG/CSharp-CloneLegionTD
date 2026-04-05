@@ -29,6 +29,8 @@ namespace LegionTDClone.Platform.Godot.Simulation
         private MeshInstance3D _healthBarFill;
         private MeshInstance3D _healthBarBg;
         private QuadMesh _healthBarFillMesh;
+        private float _resolvedHealthBarWidth;
+        private float _resolvedHealthBarHeight;
 
         private double _attackCooldown = 0;
         private double _targetRefreshTimer = 0;
@@ -236,39 +238,70 @@ namespace LegionTDClone.Platform.Godot.Simulation
 
         private void BuildHealthBar()
         {
+            ResolveHealthBarDimensions(out float yOffset, out float width, out float height);
+            _resolvedHealthBarWidth = width;
+            _resolvedHealthBarHeight = height;
+
             _healthBarRoot = new Node3D
             {
                 Name = "HealthBarRoot",
-                Position = new Vector3(0, HealthBarYOffset, 0)
+                Position = new Vector3(0, yOffset, 0)
             };
             AddChild(_healthBarRoot);
 
             _healthBarBg = new MeshInstance3D();
-            var bgMesh = new QuadMesh { Size = new Vector2(HealthBarWidth, HealthBarHeight) };
+            var bgMesh = new QuadMesh { Size = new Vector2(width, height) };
             var bgMat = new StandardMaterial3D
             {
                 ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
                 BillboardMode = BaseMaterial3D.BillboardModeEnum.Enabled,
-                AlbedoColor = new Color(0f, 0f, 0f, 0.95f)
+                AlbedoColor = new Color(0f, 0f, 0f, 0.95f),
+                NoDepthTest = true
             };
+            bgMat.RenderPriority = -1;
             bgMesh.Material = bgMat;
             _healthBarBg.Mesh = bgMesh;
             _healthBarBg.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
             _healthBarRoot.AddChild(_healthBarBg);
 
             _healthBarFill = new MeshInstance3D();
-            _healthBarFillMesh = new QuadMesh { Size = new Vector2(HealthBarWidth, HealthBarHeight * 0.75f) };
+            _healthBarFillMesh = new QuadMesh { Size = new Vector2(width, height * 0.75f) };
             var fillMat = new StandardMaterial3D
             {
                 ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
                 BillboardMode = BaseMaterial3D.BillboardModeEnum.Enabled,
-                AlbedoColor = new Color(0.2f, 0.95f, 0.3f, 1f)
+                AlbedoColor = new Color(0.2f, 0.95f, 0.3f, 1f),
+                NoDepthTest = true
             };
+            fillMat.RenderPriority = 1;
             _healthBarFillMesh.Material = fillMat;
             _healthBarFill.Mesh = _healthBarFillMesh;
             _healthBarFill.CastShadow = GeometryInstance3D.ShadowCastingSetting.Off;
             _healthBarFill.Position = new Vector3(0, 0, -0.01f);
             _healthBarRoot.AddChild(_healthBarFill);
+        }
+
+        private void ResolveHealthBarDimensions(out float yOffset, out float width, out float height)
+        {
+            float maxWidth = 0f;
+            float maxTop = 0f;
+
+            foreach (Node child in GetChildren())
+            {
+                if (child is not MeshInstance3D mesh || mesh.Mesh == null) continue;
+
+                Aabb localBounds = mesh.Mesh.GetAabb();
+                Vector3 scaledSize = localBounds.Size * mesh.Scale.Abs();
+                Vector3 scaledPosition = localBounds.Position * mesh.Scale.Abs() + mesh.Position;
+                float meshTop = scaledPosition.Y + scaledSize.Y;
+
+                maxWidth = Mathf.Max(maxWidth, Mathf.Max(scaledSize.X, scaledSize.Z));
+                maxTop = Mathf.Max(maxTop, meshTop);
+            }
+
+            width = Mathf.Max(HealthBarWidth, Mathf.Max(maxWidth * 1.15f, 2.4f));
+            height = Mathf.Max(HealthBarHeight, Mathf.Max(width * 0.16f, 0.22f));
+            yOffset = Mathf.Max(HealthBarYOffset, maxTop + (height * 1.6f));
         }
 
         private void ApplyShadowPolicy()
@@ -295,10 +328,10 @@ namespace LegionTDClone.Platform.Godot.Simulation
             if (!GodotObject.IsInstanceValid(_healthBarRoot) || !GodotObject.IsInstanceValid(_healthBarFill)) return;
 
             float pct = Mathf.Clamp(EntityState.CurrentHealth / Mathf.Max(1f, EntityState.MaxHealth), 0f, 1f);
-            float fillWidth = HealthBarWidth * pct;
-            _healthBarFillMesh.Size = new Vector2(fillWidth, HealthBarHeight * 0.75f);
-            // Anchor fill to left edge of the black background.
-            _healthBarFill.Position = new Vector3((-HealthBarWidth * 0.5f) + (fillWidth * 0.5f), 0, -0.01f);
+            float fillWidth = _resolvedHealthBarWidth * pct;
+            _healthBarFillMesh.Size = new Vector2(fillWidth, _resolvedHealthBarHeight * 0.75f);
+            // Anchor fill to the right edge so health depletes right-to-left on screen.
+            _healthBarFill.Position = new Vector3((_resolvedHealthBarWidth * 0.5f) - (fillWidth * 0.5f), 0, -0.01f);
             _healthBarRoot.Visible = !EntityState.IsDead;
         }
     }

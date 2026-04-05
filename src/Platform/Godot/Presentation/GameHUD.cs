@@ -1,396 +1,439 @@
 using Godot;
-using LegionTDClone.Domain.Economy;
 using LegionTDClone.Domain.Match;
 using LegionTDClone.Domain.Roster;
+using LegionTDClone.Platform.Godot.Presentation.Actions;
+using LegionTDClone.Platform.Godot.Presentation.Selection;
 using LegionTDClone.Platform.Godot.Input;
 using LegionTDClone.Platform.Godot.Simulation;
+using LegionTDClone.Queries.Economy;
+using LegionTDClone.Queries.Match;
 
 namespace LegionTDClone.Platform.Godot.Presentation
 {
-    public partial class GameHUD : CanvasLayer
-    {
-        [Export] public Node BuilderController;
+	public partial class GameHUD : CanvasLayer
+	{
+		[Export] public Node BuilderController;
+		[Export] public TeamSide FocusTeam = TeamSide.Left;
+		[Export] public string VersionText = "v0.1.0 pre-alpha";
+		[Export] public int WoodAmount = 0;
 
-        private Label _goldLabel;
-        private Label _buildTimerLabel;
-        private Control _inspectorPanel;
-        private Label _titleLabel;
-        private Label _statsLabel;
-        private Control _actionPanel;
-        private Button _actionButton1;
-        private Button _actionButton2;
-        private Button _actionButton3;
-        private Button _actionButton4;
-        private Node3D _selectedNode;
-        private bool _isConstructorBuildMenuOpen;
-        private int _selectedConstructorTowerIndex = -1;
+		private Label _hotkeysLabel;
+		private Label _goldLabel;
+		private Label _woodLabel;
+		private Label _timeLabel;
+		private Label _versionLabel;
+		private Control _inspectorPanel;
+		private ColorRect _portraitPlaceholder;
+		private Label _portraitRoleBadge;
+		private Label _titleLabel;
+		private Label _subtitleLabel;
+		private ProgressBar _healthBar;
+		private Label _healthLabel;
+		private Label _damageLabel;
+		private Label _rangeLabel;
+		private Label _speedLabel;
+		private Label _armorLabel;
+		private Label _statsLabel;
+		private Control _actionPanel;
+		private Button _actionButton1;
+		private Button _actionButton2;
+		private Button _actionButton3;
+		private Button _actionButton4;
+		private Button _actionButton5;
+		private Button _actionButton6;
+		private Node3D _selectedNode;
+		private bool _isConstructorBuildMenuOpen;
+		private int _selectedConstructorTowerIndex = -1;
 
-        private EconomyState _economyState;
-        private MatchState _matchState;
-        private RosterState _rosterState;
+		private EconomyQueryService _economyQuery;
+		private MatchQueryService _matchQuery;
+		private RosterState _rosterState;
 
-        public override void _Ready()
-        {
-            _economyState = CompositionRoot.App.Container.Resolve<EconomyState>();
-            _matchState = CompositionRoot.App.Container.Resolve<MatchState>();
-            _rosterState = CompositionRoot.App.Container.Resolve<RosterState>();
-            BuilderController ??= GetNodeOrNull<Node>("../BuilderController");
+		public override void _Ready()
+		{
+			_economyQuery = CompositionRoot.App.Container.Resolve<EconomyQueryService>();
+			_matchQuery = CompositionRoot.App.Container.Resolve<MatchQueryService>();
+			_rosterState = CompositionRoot.App.Container.Resolve<RosterState>();
+			BuilderController ??= GetNodeOrNull<Node>("../BuilderController");
 
-            _goldLabel = GetNode<Label>("GoldLabel");
-            _buildTimerLabel = GetNode<Label>("BuildTimerLabel");
-            _inspectorPanel = GetNode<Control>("InspectorPanel");
-            _titleLabel = GetNode<Label>("InspectorPanel/Margin/VBox/TitleLabel");
-            _statsLabel = GetNode<Label>("InspectorPanel/Margin/VBox/StatsLabel");
-            _actionPanel = GetNode<Control>("ActionPanel");
-            _actionButton1 = GetNode<Button>("ActionPanel/BtnAction1");
-            _actionButton2 = GetNode<Button>("ActionPanel/BtnAction2");
-            _actionButton3 = GetNode<Button>("ActionPanel/BtnAction3");
-            _actionButton4 = GetNode<Button>("ActionPanel/BtnAction4");
+			_hotkeysLabel = GetNode<Label>("TopBar/Margin/TopBarRow/LeftGroup/HotkeysLabel");
+			_goldLabel = GetNode<Label>("TopBar/Margin/TopBarRow/CenterGroup/GoldLabel");
+			_woodLabel = GetNode<Label>("TopBar/Margin/TopBarRow/CenterGroup/WoodLabel");
+			_timeLabel = GetNode<Label>("TopBar/Margin/TopBarRow/CenterGroup/TimeLabel");
+			_versionLabel = GetNode<Label>("TopBar/Margin/TopBarRow/VersionLabel");
+			_inspectorPanel = GetNode<Control>("BottomBar/Margin/BottomRow/SelectionPanel");
+			_portraitPlaceholder = GetNode<ColorRect>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/PortraitPanel/Margin/VBox/PortraitPlaceholder");
+			_portraitRoleBadge = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/PortraitPanel/Margin/VBox/PortraitRoleBadge");
+			_titleLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/HeaderBox/TitleLabel");
+			_subtitleLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/HeaderBox/SubtitleLabel");
+			_healthBar = GetNode<ProgressBar>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/HealthBar");
+			_healthLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/HealthLabel");
+			_damageLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid/StatDamageLabel");
+			_rangeLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid/StatRangeLabel");
+			_speedLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid/StatSpeedLabel");
+			_armorLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid/StatArmorLabel");
+			_statsLabel = GetNode<Label>("BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsLabel");
+			_actionPanel = GetNode<Control>("BottomBar/Margin/BottomRow/ActionsPanel");
+			_actionButton1 = GetNode<Button>("BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel/BtnAction1");
+			_actionButton2 = GetNode<Button>("BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel/BtnAction2");
+			_actionButton3 = GetNode<Button>("BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel/BtnAction3");
+			_actionButton4 = GetNode<Button>("BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel/BtnAction4");
+			_actionButton5 = GetNode<Button>("BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel/BtnAction5");
+			_actionButton6 = GetNode<Button>("BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel/BtnAction6");
 
-            // UI in bottom-right must stay above world interactions.
-            _inspectorPanel.MouseFilter = Control.MouseFilterEnum.Stop;
-            _actionPanel.MouseFilter = Control.MouseFilterEnum.Stop;
-            _actionButton1.MouseFilter = Control.MouseFilterEnum.Stop;
-            _actionButton2.MouseFilter = Control.MouseFilterEnum.Stop;
-            _actionButton3.MouseFilter = Control.MouseFilterEnum.Stop;
-            _actionButton4.MouseFilter = Control.MouseFilterEnum.Stop;
+			// UI in bottom-right must stay above world interactions.
+			_inspectorPanel.MouseFilter = Control.MouseFilterEnum.Stop;
+			_actionPanel.MouseFilter = Control.MouseFilterEnum.Stop;
+			_actionButton1.MouseFilter = Control.MouseFilterEnum.Stop;
+			_actionButton2.MouseFilter = Control.MouseFilterEnum.Stop;
+			_actionButton3.MouseFilter = Control.MouseFilterEnum.Stop;
+			_actionButton4.MouseFilter = Control.MouseFilterEnum.Stop;
+			_actionButton5.MouseFilter = Control.MouseFilterEnum.Stop;
+			_actionButton6.MouseFilter = Control.MouseFilterEnum.Stop;
 
-            _actionButton1.ButtonDown += HandleAction1Pressed;
-            _actionButton2.ButtonDown += HandleAction2Pressed;
-            _actionButton3.ButtonDown += HandleAction3Pressed;
-            _actionButton4.ButtonDown += HandleAction4Pressed;
+			_actionButton1.ButtonDown += HandleAction1Pressed;
+			_actionButton2.ButtonDown += HandleAction2Pressed;
+			_actionButton3.ButtonDown += HandleAction3Pressed;
+			_actionButton4.ButtonDown += HandleAction4Pressed;
 
-            HideAllActions();
-            _actionPanel.Visible = false;
-        }
+			_hotkeysLabel.Text = "F9 Menu   F10 Allies   F11 Chat   F12 Help";
+			_versionLabel.Text = VersionText;
 
-        public override void _Process(double delta)
-        {
-            _goldLabel.Text = $"Oro Izq: {_economyState.GetGold(TeamSide.Left)} | Oro Der: {_economyState.GetGold(TeamSide.Right)}";
-            if (_matchState.CurrentPhase == MatchPhase.BuildPhase)
-            {
-                _buildTimerLabel.Visible = true;
-                double remaining = MatchAdapter.Instance?.BuildPhaseTimeRemaining ?? 0.0;
-                _buildTimerLabel.Text = $"Construccion: {Mathf.CeilToInt((float)remaining)}s";
-            }
-            else
-            {
-                _buildTimerLabel.Visible = false;
-            }
+			HideAllActions();
+			UpdateInspectorDisplay();
+			UpdateActionPanel();
+		}
 
-            if (_selectedNode != null && !GodotObject.IsInstanceValid(_selectedNode))
-            {
-                ClearSelection();
-                return;
-            }
+		public override void _Process(double delta)
+		{
+			RefreshTopBar();
 
-            if (_selectedNode != null)
-            {
-                UpdateInspectorDisplay();
-                UpdateActionPanel();
-            }
-        }
+			if (_selectedNode != null && !GodotObject.IsInstanceValid(_selectedNode))
+			{
+				ClearSelection();
+				return;
+			}
 
-        public void SetSelection(Node3D entity)
-        {
-            bool selectionChanged = _selectedNode != entity;
-            _selectedNode = entity;
+			UpdateInspectorDisplay();
+			UpdateActionPanel();
+		}
 
-            if (BuilderController is ConstructionInput builder)
-            {
-                builder.SetSelectedEntity(entity);
-            }
-            else
-            {
-                BuilderController?.Call("SetSelectedEntity", entity);
-            }
+		public void SetSelection(Node3D entity)
+		{
+			bool selectionChanged = _selectedNode != entity;
+			_selectedNode = entity;
 
-            if (selectionChanged)
-            {
-                _isConstructorBuildMenuOpen = false;
-                _selectedConstructorTowerIndex = -1;
-            }
-            _inspectorPanel.Visible = true;
-            _actionPanel.Visible = true;
-            UpdateInspectorDisplay();
-            UpdateActionPanel();
-        }
+			if (BuilderController is ConstructionInput builder)
+			{
+				builder.SetSelectedEntity(entity);
+			}
+			else
+			{
+				BuilderController?.Call("SetSelectedEntity", entity);
+			}
 
-        public void ClearSelection()
-        {
-            _selectedNode = null;
+			if (selectionChanged)
+			{
+				_isConstructorBuildMenuOpen = false;
+				_selectedConstructorTowerIndex = -1;
+			}
+			UpdateInspectorDisplay();
+			UpdateActionPanel();
+		}
 
-            if (BuilderController is ConstructionInput builder)
-            {
-                builder.ClearSelectedEntity();
-            }
-            else
-            {
-                BuilderController?.Call("ClearSelectedEntity");
-            }
+		public void ClearSelection()
+		{
+			_selectedNode = null;
 
-            _isConstructorBuildMenuOpen = false;
-            _selectedConstructorTowerIndex = -1;
-            _inspectorPanel.Visible = false;
-            _actionPanel.Visible = false;
-            HideAllActions();
-        }
+			if (BuilderController is ConstructionInput builder)
+			{
+				builder.ClearSelectedEntity();
+			}
+			else
+			{
+				BuilderController?.Call("ClearSelectedEntity");
+			}
 
-        private void UpdateInspectorDisplay()
-        {
-            if (_selectedNode is TowerAdapter tower && tower.Data != null)
-            {
-                _titleLabel.Text = tower.Data.TowerName;
-                _statsLabel.Text = $"HP: {tower.Data.Hp}/{tower.Data.Hp} | DMG: {tower.Data.AttackDamage}\nRNG: {tower.Data.AttackRange} | ATK SPD: {tower.Data.AttackSpeed}\nARMOR: {tower.Data.Armor}";
-            }
-            else if (_selectedNode is UnitAdapter fighter && fighter.EntityState != null)
-            {
-                _titleLabel.Text = fighter.IsEnemy ? "Enemy Unit" : "Allied Defender";
-                _statsLabel.Text = $"HP: {fighter.EntityState.CurrentHealth:0.0}/{fighter.EntityState.MaxHealth} | DMG: {fighter.EntityState.AttackDamage}\nRNG: {fighter.EntityState.AttackRange} | ATK SPD: {fighter.EntityState.AttackSpeed}\nARMOR: {fighter.EntityState.Armor}";
-            }
-            else if (_selectedNode is ConstructorAdapter constructor)
-            {
-                _titleLabel.Text = $"Constructor ({constructor.Team})";
-                _statsLabel.Text = $"Velocidad: {constructor.MoveSpeed:0.0}\nRol: Construccion (no combate)";
-            }
-            else
-            {
-                _titleLabel.Text = "Selected Entity";
-                _statsLabel.Text = "Stats...";
-            }
-        }
+			_isConstructorBuildMenuOpen = false;
+			_selectedConstructorTowerIndex = -1;
+			UpdateInspectorDisplay();
+			UpdateActionPanel();
+		}
 
-        private void UpdateActionPanel()
-        {
-            HideAllActions();
-            ClearBuildButtonHighlights();
+		private void UpdateInspectorDisplay()
+		{
+			var viewData = SelectionViewFactory.Build(_selectedNode);
+			_titleLabel.Text = viewData.Title;
+			_subtitleLabel.Text = viewData.Subtitle;
+			_portraitRoleBadge.Text = viewData.RoleBadge;
+			_portraitPlaceholder.Color = viewData.PortraitColor;
+			SetHealth(viewData.CurrentHealth, viewData.MaxHealth);
+			SetStats(
+				viewData.DamageText,
+				viewData.RangeText,
+				viewData.SpeedText,
+				viewData.ArmorText);
+			_statsLabel.Text = viewData.DescriptionText;
+		}
 
-            if (_selectedNode is TowerAdapter tower && tower.Data != null)
-            {
-                TeamSide team = ResolveTeamFromNode(tower);
-                int refund = Mathf.RoundToInt(tower.Data.Cost * tower.Data.SellRefundFactor);
-                _actionButton1.Visible = true;
-                _actionButton1.Disabled = false;
-                _actionButton1.Text = $"Vender (+{refund}g)";
+		private void UpdateActionPanel()
+		{
+			HideAllActions();
+			ClearBuildButtonHighlights();
+			var slots = ActionPanelViewFactory.Build(
+				_selectedNode,
+				_isConstructorBuildMenuOpen,
+				_selectedConstructorTowerIndex,
+				_economyQuery,
+				_rosterState);
 
-                bool hasUpgrade = tower.Data.UpgradeScene != null && tower.Data.UpgradeCost > 0;
-                _actionButton2.Visible = true;
-                _actionButton2.Text = hasUpgrade ? $"Mejorar ({tower.Data.UpgradeCost}g)" : "Mejorar (sin evolucion)";
-                _actionButton2.Disabled = !hasUpgrade || _economyState.GetGold(team) < tower.Data.UpgradeCost;
-                return;
-            }
+			ApplyActionSlot(_actionButton1, slots[0]);
+			ApplyActionSlot(_actionButton2, slots[1]);
+			ApplyActionSlot(_actionButton3, slots[2]);
+			ApplyActionSlot(_actionButton4, slots[3]);
+			ApplyActionSlot(_actionButton5, slots[4]);
+			ApplyActionSlot(_actionButton6, slots[5]);
+		}
 
-            if (_selectedNode is ConstructorAdapter)
-            {
-                if (_isConstructorBuildMenuOpen)
-                {
-                    TeamSide team = ResolveTeamFromNode(_selectedNode);
-                    int teamGold = _economyState.GetGold(team);
-                    int blueCost = _rosterState.GetTowerCost(0);
-                    int greenCost = _rosterState.GetTowerCost(1);
+		private void HideAllActions()
+		{
+			ConfigureEmptyActionSlot(_actionButton1);
+			ConfigureEmptyActionSlot(_actionButton2);
+			ConfigureEmptyActionSlot(_actionButton3);
+			ConfigureEmptyActionSlot(_actionButton4);
+			ConfigureEmptyActionSlot(_actionButton5);
+			ConfigureEmptyActionSlot(_actionButton6);
 
-                    _actionButton1.Visible = true;
-                    _actionButton1.Disabled = teamGold < blueCost;
-                    _actionButton1.Text = $"Torre Azul ({blueCost}g)";
-                    if (_selectedConstructorTowerIndex == 0) ApplySelectedStyle(_actionButton1, new Color(0.25f, 0.75f, 1f, 1f));
+			_actionButton1.Visible = false;
+			_actionButton2.Visible = false;
+			_actionButton3.Visible = false;
+			_actionButton4.Visible = false;
+			_actionButton5.Visible = true;
+			_actionButton6.Visible = true;
+		}
 
-                    _actionButton2.Visible = true;
-                    _actionButton2.Disabled = teamGold < greenCost;
-                    _actionButton2.Text = $"Torre Verde ({greenCost}g)";
-                    if (_selectedConstructorTowerIndex == 1) ApplySelectedStyle(_actionButton2, new Color(0.25f, 1f, 0.4f, 1f));
+		private void HandleAction1Pressed()
+		{
+			if (_selectedNode is TowerAdapter tower)
+			{
+				if (BuilderController is ConstructionInput builder)
+				{
+					builder.TrySellTower(tower);
+				}
+				else
+				{
+					BuilderController?.Call("TrySellTower", tower);
+				}
+				ClearSelection();
+				return;
+			}
 
-                    _actionButton3.Visible = true;
-                    _actionButton3.Disabled = false;
-                    _actionButton3.Text = "Volver";
-                    return;
-                }
+			if (_selectedNode is ConstructorAdapter)
+			{
+				if (_isConstructorBuildMenuOpen)
+				{
+					if (BuilderController is ConstructionInput builder)
+					{
+						builder.BeginBuildPlacementFromUi(_selectedNode, 0);
+					}
+					else
+					{
+						BuilderController?.Call("SetSelectedEntity", _selectedNode);
+						BuilderController?.Call("BeginBuildPlacementFromSelection", 0);
+					}
+					_selectedConstructorTowerIndex = 0;
+					UpdateActionPanel();
+				}
+				else
+				{
+					_isConstructorBuildMenuOpen = true;
+					_selectedConstructorTowerIndex = -1;
+					if (BuilderController is ConstructionInput builder)
+					{
+						builder.EnterBuildMenuForSelectedConstructor();
+					}
+					UpdateActionPanel();
+				}
+			}
+		}
 
-                _actionButton1.Visible = true;
-                _actionButton1.Disabled = false;
-                _actionButton1.Text = "Construir";
-                return;
-            }
+		private void HandleAction2Pressed()
+		{
+			if (_selectedNode is TowerAdapter tower)
+			{
+				if (BuilderController is ConstructionInput builder)
+				{
+					builder.TryUpgradeTower(tower);
+				}
+				else
+				{
+					BuilderController?.Call("TryUpgradeTower", tower);
+				}
+				UpdateActionPanel();
+				UpdateInspectorDisplay();
+				return;
+			}
 
-            if (_isConstructorBuildMenuOpen)
-            {
-                _isConstructorBuildMenuOpen = false;
-            }
+			if (_selectedNode is ConstructorAdapter)
+			{
+				if (_isConstructorBuildMenuOpen)
+				{
+					if (BuilderController is ConstructionInput builder)
+					{
+						builder.BeginBuildPlacementFromUi(_selectedNode, 1);
+					}
+					else
+					{
+						BuilderController?.Call("SetSelectedEntity", _selectedNode);
+						BuilderController?.Call("BeginBuildPlacementFromSelection", 1);
+					}
+					_selectedConstructorTowerIndex = 1;
+					UpdateActionPanel();
+				}
+			}
+		}
 
-        }
+		private void HandleAction3Pressed()
+		{
+			if (_selectedNode is ConstructorAdapter && _isConstructorBuildMenuOpen)
+			{
+				_isConstructorBuildMenuOpen = false;
+				_selectedConstructorTowerIndex = -1;
+				if (BuilderController is ConstructionInput builder)
+				{
+					builder.ExitBuildPlacementMode();
+				}
+				else
+				{
+					BuilderController?.Call("ExitBuildPlacementMode");
+				}
+				UpdateActionPanel();
+			}
+		}
 
-        private void HideAllActions()
-        {
-            _actionButton1.Visible = false;
-            _actionButton2.Visible = false;
-            _actionButton3.Visible = false;
-            _actionButton4.Visible = false;
-        }
+		private void HandleAction4Pressed() { }
 
-        private void HandleAction1Pressed()
-        {
-            if (_selectedNode is TowerAdapter tower)
-            {
-                if (BuilderController is ConstructionInput builder)
-                {
-                    builder.TrySellTower(tower);
-                }
-                else
-                {
-                    BuilderController?.Call("TrySellTower", tower);
-                }
-                ClearSelection();
-                return;
-            }
+		public bool IsPointOverUi(Vector2 screenPoint)
+		{
+			var topBar = GetNodeOrNull<Control>("TopBar");
+			if (topBar != null && topBar.Visible)
+			{
+				var topBarRect = new Rect2(topBar.GlobalPosition, topBar.Size);
+				if (topBarRect.HasPoint(screenPoint)) return true;
+			}
 
-            if (_selectedNode is ConstructorAdapter)
-            {
-                if (_isConstructorBuildMenuOpen)
-                {
-                    if (BuilderController is ConstructionInput builder)
-                    {
-                        builder.BeginBuildPlacementFromUi(_selectedNode, 0);
-                    }
-                    else
-                    {
-                        BuilderController?.Call("SetSelectedEntity", _selectedNode);
-                        BuilderController?.Call("BeginBuildPlacementFromSelection", 0);
-                    }
-                    _selectedConstructorTowerIndex = 0;
-                    UpdateActionPanel();
-                }
-                else
-                {
-                    _isConstructorBuildMenuOpen = true;
-                    _selectedConstructorTowerIndex = -1;
-                    if (BuilderController is ConstructionInput builder)
-                    {
-                        builder.EnterBuildMenuForSelectedConstructor();
-                    }
-                    UpdateActionPanel();
-                }
-            }
-        }
+			var bottomBar = GetNodeOrNull<Control>("BottomBar");
+			if (bottomBar != null && bottomBar.Visible)
+			{
+				var bottomBarRect = new Rect2(bottomBar.GlobalPosition, bottomBar.Size);
+				if (bottomBarRect.HasPoint(screenPoint)) return true;
+			}
 
-        private void HandleAction2Pressed()
-        {
-            if (_selectedNode is TowerAdapter tower)
-            {
-                if (BuilderController is ConstructionInput builder)
-                {
-                    builder.TryUpgradeTower(tower);
-                }
-                else
-                {
-                    BuilderController?.Call("TryUpgradeTower", tower);
-                }
-                UpdateActionPanel();
-                UpdateInspectorDisplay();
-                return;
-            }
+			if (_actionPanel != null && _actionPanel.Visible)
+			{
+				var actionRect = new Rect2(_actionPanel.GlobalPosition, _actionPanel.Size);
+				if (actionRect.HasPoint(screenPoint)) return true;
+			}
 
-            if (_selectedNode is ConstructorAdapter)
-            {
-                if (_isConstructorBuildMenuOpen)
-                {
-                    if (BuilderController is ConstructionInput builder)
-                    {
-                        builder.BeginBuildPlacementFromUi(_selectedNode, 1);
-                    }
-                    else
-                    {
-                        BuilderController?.Call("SetSelectedEntity", _selectedNode);
-                        BuilderController?.Call("BeginBuildPlacementFromSelection", 1);
-                    }
-                    _selectedConstructorTowerIndex = 1;
-                    UpdateActionPanel();
-                }
-            }
-        }
+			if (_inspectorPanel != null && _inspectorPanel.Visible)
+			{
+				var inspectorRect = new Rect2(_inspectorPanel.GlobalPosition, _inspectorPanel.Size);
+				if (inspectorRect.HasPoint(screenPoint)) return true;
+			}
 
-        private void HandleAction3Pressed()
-        {
-            if (_selectedNode is ConstructorAdapter && _isConstructorBuildMenuOpen)
-            {
-                _isConstructorBuildMenuOpen = false;
-                _selectedConstructorTowerIndex = -1;
-                if (BuilderController is ConstructionInput builder)
-                {
-                    builder.ExitBuildPlacementMode();
-                }
-                else
-                {
-                    BuilderController?.Call("ExitBuildPlacementMode");
-                }
-                UpdateActionPanel();
-            }
-        }
+			return false;
+		}
 
-        private void HandleAction4Pressed() { }
+		private void ApplySelectedStyle(Button button, Color borderColor)
+		{
+			var style = new StyleBoxFlat
+			{
+				BgColor = new Color(0.13f, 0.13f, 0.13f, 0.95f),
+				BorderColor = borderColor,
+				BorderWidthLeft = 3,
+				BorderWidthTop = 3,
+				BorderWidthRight = 3,
+				BorderWidthBottom = 3,
+				CornerRadiusTopLeft = 6,
+				CornerRadiusTopRight = 6,
+				CornerRadiusBottomRight = 6,
+				CornerRadiusBottomLeft = 6
+			};
 
-        private static TeamSide ResolveTeamFromNode(Node3D node)
-        {
-            Node current = node;
-            while (current != null)
-            {
-                string name = current.Name.ToString();
-                if (name == "Lane_Right") return TeamSide.Right;
-                if (name == "Lane_Left") return TeamSide.Left;
-                current = current.GetParent();
-            }
+			button.AddThemeStyleboxOverride("normal", style);
+			button.AddThemeStyleboxOverride("hover", style);
+			button.AddThemeStyleboxOverride("pressed", style);
+			button.AddThemeStyleboxOverride("focus", style);
+		}
 
-            return TeamSide.Left;
-        }
+		private void ClearBuildButtonHighlights()
+		{
+			_actionButton1.RemoveThemeStyleboxOverride("normal");
+			_actionButton1.RemoveThemeStyleboxOverride("hover");
+			_actionButton1.RemoveThemeStyleboxOverride("pressed");
+			_actionButton1.RemoveThemeStyleboxOverride("focus");
 
-        public bool IsPointOverUi(Vector2 screenPoint)
-        {
-            if (_actionPanel != null && _actionPanel.Visible)
-            {
-                var actionRect = new Rect2(_actionPanel.GlobalPosition, _actionPanel.Size);
-                if (actionRect.HasPoint(screenPoint)) return true;
-            }
+			_actionButton2.RemoveThemeStyleboxOverride("normal");
+			_actionButton2.RemoveThemeStyleboxOverride("hover");
+			_actionButton2.RemoveThemeStyleboxOverride("pressed");
+			_actionButton2.RemoveThemeStyleboxOverride("focus");
+		}
 
-            if (_inspectorPanel != null && _inspectorPanel.Visible)
-            {
-                var inspectorRect = new Rect2(_inspectorPanel.GlobalPosition, _inspectorPanel.Size);
-                if (inspectorRect.HasPoint(screenPoint)) return true;
-            }
+		private void RefreshTopBar()
+		{
+			_goldLabel.Text = $"Gold: {_economyQuery.GetGold(FocusTeam)}";
+			_woodLabel.Text = $"Wood: {WoodAmount}";
 
-            return false;
-        }
+			if (_matchQuery.IsBuildPhase())
+			{
+				double remaining = MatchAdapter.Instance?.BuildPhaseTimeRemaining ?? 0.0;
+				_timeLabel.Text = $"Build: {Mathf.CeilToInt((float)remaining)}s";
+				return;
+			}
 
-        private void ApplySelectedStyle(Button button, Color borderColor)
-        {
-            var style = new StyleBoxFlat
-            {
-                BgColor = new Color(0.13f, 0.13f, 0.13f, 0.95f),
-                BorderColor = borderColor,
-                BorderWidthLeft = 3,
-                BorderWidthTop = 3,
-                BorderWidthRight = 3,
-                BorderWidthBottom = 3,
-                CornerRadiusTopLeft = 6,
-                CornerRadiusTopRight = 6,
-                CornerRadiusBottomRight = 6,
-                CornerRadiusBottomLeft = 6
-            };
+			string phaseLabel = _matchQuery.GetCurrentPhase() switch
+			{
+				MatchPhase.CombatPhase => "Combat",
+				MatchPhase.WaitingForPlayers => "Waiting",
+				_ => "Match"
+			};
 
-            button.AddThemeStyleboxOverride("normal", style);
-            button.AddThemeStyleboxOverride("hover", style);
-            button.AddThemeStyleboxOverride("pressed", style);
-            button.AddThemeStyleboxOverride("focus", style);
-        }
+			_timeLabel.Text = phaseLabel;
+		}
 
-        private void ClearBuildButtonHighlights()
-        {
-            _actionButton1.RemoveThemeStyleboxOverride("normal");
-            _actionButton1.RemoveThemeStyleboxOverride("hover");
-            _actionButton1.RemoveThemeStyleboxOverride("pressed");
-            _actionButton1.RemoveThemeStyleboxOverride("focus");
+		private void SetHealth(float current, float max)
+		{
+			float safeMax = Mathf.Max(max, 1f);
+			bool hasHealth = max > 0f;
+			_healthBar.MaxValue = safeMax;
+			_healthBar.Value = hasHealth ? Mathf.Clamp(current, 0f, safeMax) : 0f;
+			_healthLabel.Text = hasHealth ? $"HP: {current:0.#} / {max:0.#}" : "HP: N/A";
+		}
 
-            _actionButton2.RemoveThemeStyleboxOverride("normal");
-            _actionButton2.RemoveThemeStyleboxOverride("hover");
-            _actionButton2.RemoveThemeStyleboxOverride("pressed");
-            _actionButton2.RemoveThemeStyleboxOverride("focus");
-        }
-    }
+		private void SetStats(string damage, string range, string speed, string armor)
+		{
+			_damageLabel.Text = damage;
+			_rangeLabel.Text = range;
+			_speedLabel.Text = speed;
+			_armorLabel.Text = armor;
+		}
+
+		private static void ConfigureEmptyActionSlot(Button button)
+		{
+			button.Text = "";
+			button.Disabled = true;
+		}
+
+		private void ApplyActionSlot(Button button, ActionSlotViewData slot)
+		{
+			button.Visible = slot.Visible;
+			button.Text = slot.Text;
+			button.Disabled = slot.Disabled;
+
+			if (slot.HighlightColor is Color color)
+			{
+				ApplySelectedStyle(button, color);
+			}
+		}
+	}
 }

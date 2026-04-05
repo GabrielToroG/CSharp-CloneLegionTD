@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" path="res://Scenes/GameHUD.tscn" id="9_hud"]
 [ext_resource type="Script" path="res://src/Platform/Godot/Input/SelectionInput.cs" id="10_sel"]
 [ext_resource type="PackedScene" uid="uid://b0kinguid001" path="res://Scenes/King.tscn" id="11_king"]
+[ext_resource type="Script" path="res://src/Platform/Godot/Input/RtsCameraController.cs" id="12_cam"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gray"]
 albedo_color = Color(0.4, 0.4, 0.4, 1)
@@ -39,9 +40,21 @@ size = Vector3(14, 0.2, 8)
 [node name="TestGameMap" type="Node3D"]
 
 [node name="Camera3D" type="Camera3D" parent="."]
-position = Vector3(0, 40, 14)
-rotation_degrees = Vector3(-63, 0, 0)
+position = Vector3(0, 24, 18)
+rotation_degrees = Vector3(-52, 0, 0)
 current = true
+fov = 58.0
+script = ExtResource("12_cam")
+HUDManager = NodePath("../GameHUD")
+EdgeScrollMargin = 20.0
+EdgeScrollSpeed = 20.0
+MinX = -17.5
+MaxX = 17.5
+MinZ = -34.0
+MaxZ = 32.0
+FixedHeight = 24.0
+FixedPitchDegrees = -52.0
+FieldOfView = 58.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 20, 0)
@@ -136,4 +149,3 @@ script = ExtResource("10_sel")
 MainCamera = NodePath("../Camera3D")
 HUDManager = NodePath("../GameHUD")
 BuilderController = NodePath("../BuilderController")
-

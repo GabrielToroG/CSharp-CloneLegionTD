@@ -7,98 +7,449 @@ script = ExtResource("1_hud")
 node_paths = PackedStringArray("BuilderController")
 BuilderController = NodePath("../BuilderController")
 
-[node name="GoldLabel" type="Label" parent="."]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 200.0
-offset_bottom = 60.0
-theme_override_font_sizes/font_size = 32
-theme_override_colors/font_color = Color(1, 0.8, 0, 1)
-text = "Oro: 0"
-
-[node name="BuildTimerLabel" type="Label" parent="."]
-anchors_preset = 1
-anchor_left = 1.0
+[node name="TopBar" type="PanelContainer" parent="."]
+anchors_preset = 10
 anchor_right = 1.0
-offset_left = -320.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = 60.0
-theme_override_font_sizes/font_size = 30
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+offset_left = 28.0
+offset_top = 12.0
+offset_right = -28.0
+offset_bottom = 66.0
+mouse_filter = 1
+
+[node name="Margin" type="MarginContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+
+[node name="TopBarRow" type="HBoxContainer" parent="TopBar/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="LeftGroup" type="HBoxContainer" parent="TopBar/Margin/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="HotkeysLabel" type="Label" parent="TopBar/Margin/TopBarRow/LeftGroup"]
+layout_mode = 2
+size_flags_horizontal = 3
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.76, 0.75, 0.7, 1)
+text = "F9 Menu   F10 Allies   F11 Chat   F12 Help"
+
+[node name="CenterGroup" type="HBoxContainer" parent="TopBar/Margin/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 28
+
+[node name="GoldLabel" type="Label" parent="TopBar/Margin/TopBarRow/CenterGroup"]
+layout_mode = 2
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.84, 0.36, 1)
+text = "Gold: 0"
+
+[node name="WoodLabel" type="Label" parent="TopBar/Margin/TopBarRow/CenterGroup"]
+layout_mode = 2
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.49, 0.84, 0.58, 1)
+text = "Wood: 0"
+
+[node name="TimeLabel" type="Label" parent="TopBar/Margin/TopBarRow/CenterGroup"]
+layout_mode = 2
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.95, 0.76, 1)
+text = "Build: 30s"
+
+[node name="VersionLabel" type="Label" parent="TopBar/Margin/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 8
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.72, 0.72, 0.72, 1)
 horizontal_alignment = 2
-text = "Construccion: 30s"
+text = "v0.1.0 pre-alpha"
 
-[node name="InspectorPanel" type="PanelContainer" parent="."]
-visible = false
-anchors_preset = 7
-anchor_left = 0.5
+[node name="BottomBar" type="PanelContainer" parent="."]
+anchors_preset = 12
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -120.0
-offset_right = 150.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 0
+offset_left = 28.0
+offset_top = -300.0
+offset_right = -28.0
+offset_bottom = -150.0
+mouse_filter = 1
 
-[node name="Margin" type="MarginContainer" parent="InspectorPanel"]
+[node name="Margin" type="MarginContainer" parent="BottomBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 18
+
+[node name="BottomRow" type="HBoxContainer" parent="BottomBar/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MinimapPanel" type="PanelContainer" parent="BottomBar/Margin/BottomRow"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="SectionDividerLeft" type="ColorRect" parent="BottomBar/Margin/BottomRow"]
+custom_minimum_size = Vector2(3, 0)
+layout_mode = 2
+size_flags_vertical = 3
+color = Color(0.72, 0.64, 0.42, 0.55)
+
+[node name="Margin" type="MarginContainer" parent="BottomBar/Margin/BottomRow/MinimapPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9, 0.85, 0.65, 1)
+text = "Minimap"
+
+[node name="MapFrame" type="PanelContainer" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox"]
+custom_minimum_size = Vector2(152, 152)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MapRoot" type="Control" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame"]
+custom_minimum_size = Vector2(152, 152)
+layout_mode = 2
+
+[node name="MapBackground" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.09, 0.12, 0.96)
+
+[node name="LeftLane" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 34.0
+offset_top = 18.0
+offset_right = 72.0
+offset_bottom = 134.0
+color = Color(0.12, 0.26, 0.22, 0.85)
+
+[node name="CenterDivider" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 88.0
+offset_top = 10.0
+offset_right = 92.0
+offset_bottom = 142.0
+color = Color(0.7, 0.68, 0.55, 0.45)
+
+[node name="RightLane" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 108.0
+offset_top = 18.0
+offset_right = 146.0
+offset_bottom = 134.0
+color = Color(0.12, 0.26, 0.22, 0.85)
+
+[node name="UpperBaseLeft" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 38.0
+offset_top = 16.0
+offset_right = 50.0
+offset_bottom = 28.0
+color = Color(0.84, 0.36, 0.34, 1)
+
+[node name="UpperBaseRight" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 130.0
+offset_top = 16.0
+offset_right = 142.0
+offset_bottom = 28.0
+color = Color(0.84, 0.36, 0.34, 1)
+
+[node name="LowerBaseLeft" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 38.0
+offset_top = 124.0
+offset_right = 50.0
+offset_bottom = 136.0
+color = Color(0.35, 0.78, 0.94, 1)
+
+[node name="LowerBaseRight" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 130.0
+offset_top = 124.0
+offset_right = 142.0
+offset_bottom = 136.0
+color = Color(0.35, 0.78, 0.94, 1)
+
+[node name="UnitDot1" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 49.0
+offset_top = 72.0
+offset_right = 55.0
+offset_bottom = 78.0
+color = Color(0.39, 0.91, 0.48, 1)
+
+[node name="UnitDot2" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 121.0
+offset_top = 84.0
+offset_right = 127.0
+offset_bottom = 90.0
+color = Color(0.39, 0.91, 0.48, 1)
+
+[node name="EnemyDot1" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 49.0
+offset_top = 46.0
+offset_right = 55.0
+offset_bottom = 52.0
+color = Color(0.96, 0.3, 0.27, 1)
+
+[node name="EnemyDot2" type="ColorRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 121.0
+offset_top = 58.0
+offset_right = 127.0
+offset_bottom = 64.0
+color = Color(0.96, 0.3, 0.27, 1)
+
+[node name="CameraFrame" type="ReferenceRect" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/MapFrame/MapRoot"]
+offset_left = 26.0
+offset_top = 96.0
+offset_right = 74.0
+offset_bottom = 132.0
+border_color = Color(0.99, 0.95, 0.74, 0.95)
+editor_only = false
+
+[node name="LegendRow" type="HBoxContainer" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="LegendAllied" type="Label" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/LegendRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.39, 0.91, 0.48, 1)
+text = "Allied"
+
+[node name="LegendEnemy" type="Label" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/LegendRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.96, 0.3, 0.27, 1)
+text = "Enemy"
+
+[node name="LegendCamera" type="Label" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox/LegendRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.99, 0.95, 0.74, 1)
+text = "Camera"
+
+[node name="HintLabel" type="Label" parent="BottomBar/Margin/BottomRow/MinimapPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.65, 0.68, 0.72, 1)
+text = "Preview tactico del campo"
+
+[node name="SelectionPanel" type="PanelContainer" parent="BottomBar/Margin/BottomRow"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="SectionDividerRight" type="ColorRect" parent="BottomBar/Margin/BottomRow"]
+custom_minimum_size = Vector2(3, 0)
+layout_mode = 2
+size_flags_vertical = 3
+color = Color(0.72, 0.64, 0.42, 0.55)
+
+[node name="Margin" type="MarginContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="CenterContainer" type="CenterContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SelectionRow" type="HBoxContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="PortraitPanel" type="PanelContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(118, 0)
+size_flags_vertical = 3
+
+[node name="Margin" type="MarginContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/PortraitPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="InspectorPanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/PortraitPanel/Margin"]
 layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="InspectorPanel/Margin/VBox"]
+[node name="PortraitPlaceholder" type="ColorRect" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/PortraitPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 92)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 1, 0, 1)
-text = "Selected Unit"
+size_flags_vertical = 3
+color = Color(0.1, 0.18, 0.16, 0.95)
+
+[node name="PortraitRoleBadge" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/PortraitPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.83, 0.8, 0.67, 1)
 horizontal_alignment = 1
+text = "Builder"
 
-[node name="StatsLabel" type="Label" parent="InspectorPanel/Margin/VBox"]
+[node name="DetailsPanel" type="VBoxContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "HP: --/-- | ATK: --
-RNG: -- | SPD: --
-ARMOR: --"
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="HeaderBox" type="VBoxContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/HeaderBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.97, 0.93, 0.8, 1)
+text = "Selected Unit"
 text_overrun_behavior = 3
 
-[node name="ActionPanel" type="HBoxContainer" parent="."]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -400.0
-offset_top = -100.0
-offset_right = -40.0
-offset_bottom = -30.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/separation = 20
-
-[node name="BtnAction1" type="Button" parent="ActionPanel"]
+[node name="SubtitleLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/HeaderBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.72, 0.78, 0.76, 1)
+text = "Awaiting selection"
+
+[node name="HealthBar" type="ProgressBar" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HealthLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.66, 0.92, 0.73, 1)
+text = "HP: -- / --"
+
+[node name="StatsGrid" type="GridContainer" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 6
+
+[node name="StatDamageLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.91, 0.76, 0.67, 1)
+text = "DMG: --"
+
+[node name="StatRangeLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.86, 0.97, 1)
+text = "RNG: --"
+
+[node name="StatSpeedLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.84, 0.9, 0.73, 1)
+text = "SPD: --"
+
+[node name="StatArmorLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.9, 0.85, 0.69, 1)
+text = "ARM: --"
+
+[node name="StatsLabel" type="Label" parent="BottomBar/Margin/BottomRow/SelectionPanel/Margin/CenterContainer/SelectionRow/DetailsPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.74, 0.76, 0.79, 1)
+text = "Select a unit, tower or constructor."
+text_overrun_behavior = 3
+
+[node name="ActionsPanel" type="PanelContainer" parent="BottomBar/Margin/BottomRow"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Margin" type="MarginContainer" parent="BottomBar/Margin/BottomRow/ActionsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9, 0.85, 0.65, 1)
+text = "Commands"
+
+[node name="ActionPanel" type="GridContainer" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="BtnAction1" type="Button" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel"]
+custom_minimum_size = Vector2(110, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "Action 1"
 
-[node name="BtnAction2" type="Button" parent="ActionPanel"]
+[node name="BtnAction2" type="Button" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel"]
+custom_minimum_size = Vector2(110, 54)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "Action 2"
 
-[node name="BtnAction3" type="Button" parent="ActionPanel"]
+[node name="BtnAction3" type="Button" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel"]
+custom_minimum_size = Vector2(110, 54)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "Action 3"
 
-[node name="BtnAction4" type="Button" parent="ActionPanel"]
+[node name="BtnAction4" type="Button" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel"]
+custom_minimum_size = Vector2(110, 54)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "Action 4"
 
+[node name="BtnAction5" type="Button" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel"]
+custom_minimum_size = Vector2(110, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Action 5"
+
+[node name="BtnAction6" type="Button" parent="BottomBar/Margin/BottomRow/ActionsPanel/Margin/VBox/ActionPanel"]
+custom_minimum_size = Vector2(110, 54)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Action 6"

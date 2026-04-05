@@ -7,6 +7,8 @@ using LegionTDClone.Domain.Match;
 using LegionTDClone.Domain.Roster;
 using LegionTDClone.Domain.Waves;
 using LegionTDClone.Queries.Board;
+using LegionTDClone.Queries.Economy;
+using LegionTDClone.Queries.Match;
 
 namespace LegionTDClone.CompositionRoot
 {
@@ -44,7 +46,11 @@ namespace LegionTDClone.CompositionRoot
 
             // Queries
             var boardQuery = new BoardQueryService(boardState);
+            var economyQuery = new EconomyQueryService(economyState);
+            var matchQuery = new MatchQueryService(matchState);
             _container.RegisterSingleton(boardQuery);
+            _container.RegisterSingleton(economyQuery);
+            _container.RegisterSingleton(matchQuery);
 
             // Application Use Cases
             var matchUseCase = new MatchUseCase(matchState);
